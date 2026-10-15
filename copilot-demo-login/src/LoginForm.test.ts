@@ -1,5 +1,5 @@
 import { createLoginForm } from "./LoginForm";
-import type { LoginFn } from "./api/authClient";
+import { AuthError, type AuthErrorCode, type LoginFn } from "./api/authClient";
 
 function setup(login: LoginFn) {
   const root = document.createElement("div");
@@ -38,5 +38,62 @@ describe("LoginForm", () => {
     resolve();
     await flush();
     expect(root.querySelector("button")!.disabled).toBe(false);
+  });
+
+  it.each<[AuthErrorCode, string]>([
+    ["INVALID_CREDENTIALS", "이메일 또는 비밀번호가 올바르지 않습니다."],
+    ["ACCOUNT_LOCKED", "계정이 잠겼습니다. 관리자에게 문의해 주세요."],
+    ["NETWORK_ERROR", "네트워크 연결을 확인한 뒤 다시 시도해 주세요."],
+  ])("%s 오류 시 해당 메시지를 role=alert로 표시한다", async (code, message) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { root, form } = setup(async () => {
+      throw new AuthError(code);
+    });
+
+    form.requestSubmit();
+    await flush();
+
+    const alert = root.querySelector<HTMLElement>('[role="alert"]')!;
+    expect(alert.hidden).toBe(false);
+    expect(alert.textContent).toBe(message);
+  });
+
+  it("알 수 없는 오류 시 기본 메시지를 표시한다", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { root, form } = setup(async () => {
+      throw new Error("boom");
+    });
+
+    form.requestSubmit();
+    await flush();
+
+    const alert = root.querySelector<HTMLElement>('[role="alert"]')!;
+    expect(alert.hidden).toBe(false);
+    expect(alert.textContent).toBe("알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+  });
+
+  it("다시 로그인을 시도하면 이전 오류 메시지를 지운다", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    let attempt = 0;
+    let resolve!: () => void;
+    const { root, form } = setup(() => {
+      attempt += 1;
+      if (attempt === 1) return Promise.reject(new AuthError("INVALID_CREDENTIALS"));
+      return new Promise((r) => (resolve = () => r({ displayName: "데모 사용자" })));
+    });
+
+    form.requestSubmit();
+    await flush();
+    const alert = root.querySelector<HTMLElement>('[role="alert"]')!;
+    expect(alert.hidden).toBe(false);
+
+    form.requestSubmit();
+    expect(alert.hidden).toBe(true);
+    expect(alert.textContent).toBe("");
+
+    resolve();
+    await flush();
+    expect(alert.hidden).toBe(true);
+    expect(root.querySelector<HTMLParagraphElement>(".welcome")!.hidden).toBe(false);
   });
 });
