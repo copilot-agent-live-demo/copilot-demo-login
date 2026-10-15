@@ -10,7 +10,10 @@ export function createLoginForm(root: HTMLElement, login: LoginFn): void {
       </label>
       <label>
         비밀번호
-        <input name="password" type="password" autocomplete="current-password" required />
+        <span class="password-field">
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+          <button class="password-toggle" type="button" aria-controls="password" aria-pressed="false">보기</button>
+        </span>
       </label>
       <button type="submit">로그인</button>
       <p class="welcome" hidden></p>
@@ -18,8 +21,17 @@ export function createLoginForm(root: HTMLElement, login: LoginFn): void {
   `;
 
   const form = root.querySelector<HTMLFormElement>("form")!;
-  const button = form.querySelector<HTMLButtonElement>("button")!;
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const password = form.querySelector<HTMLInputElement>('input[name="password"]')!;
+  const passwordToggle = form.querySelector<HTMLButtonElement>(".password-toggle")!;
   const welcome = form.querySelector<HTMLParagraphElement>(".welcome")!;
+
+  passwordToggle.addEventListener("click", () => {
+    const isVisible = password.type === "text";
+    password.type = isVisible ? "password" : "text";
+    passwordToggle.textContent = isVisible ? "보기" : "숨기기";
+    passwordToggle.setAttribute("aria-pressed", String(!isVisible));
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();

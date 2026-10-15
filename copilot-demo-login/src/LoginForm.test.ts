@@ -33,10 +33,30 @@ describe("LoginForm", () => {
     );
 
     form.requestSubmit();
-    expect(root.querySelector("button")!.disabled).toBe(true);
+    expect(root.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
 
     resolve();
     await flush();
-    expect(root.querySelector("button")!.disabled).toBe(false);
+    expect(root.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(false);
+  });
+
+  it("비밀번호 보기 버튼으로 비밀번호 표시를 토글한다", () => {
+    const { root } = setup(async () => ({ displayName: "데모 사용자" }));
+    const password = root.querySelector<HTMLInputElement>('input[name="password"]')!;
+    const toggle = root.querySelector<HTMLButtonElement>(".password-toggle")!;
+
+    expect(password.type).toBe("password");
+    expect(toggle.getAttribute("aria-pressed")).toBe("false");
+
+    toggle.click();
+    expect(password.type).toBe("text");
+    expect(password.value).toBe("password123");
+    expect(toggle.textContent).toBe("숨기기");
+    expect(toggle.getAttribute("aria-pressed")).toBe("true");
+
+    toggle.click();
+    expect(password.type).toBe("password");
+    expect(toggle.textContent).toBe("보기");
+    expect(toggle.getAttribute("aria-pressed")).toBe("false");
   });
 });
