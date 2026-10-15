@@ -55,7 +55,7 @@
 
 | 단계 | 화면 | 할 일 | 시간 |
 |---|---|---|---|
-| ① 버그 확인 | 브라우저 `localhost:5173` | `demo@example.com` / 아무 비밀번호로 로그인. 아무 반응이 없음을 보여줌 | 1분 |
+| ① 버그 확인 | 브라우저 `127.0.0.1:5173` | `demo@example.com` / 아무 비밀번호로 로그인. 아무 반응이 없음을 보여줌 | 1분 |
 | ② 이슈 위임 | GitHub Issues | `docs/demo-issue.md`로 이슈를 만들고 Assignees에서 **Copilot** 지정 | 1분 |
 | ③ 에이전트가 일하는 동안 | VS Code | `.github/copilot-instructions.md`와 `AGENTS.md`를 보여주고, `docs/demo-agent-mode-prompt.md`의 프롬프트로 Agent Mode 시연 | 4분 |
 | ④ PR 검토 | GitHub PR | 에이전트 세션 로그, 변경 파일, CI 결과를 보고 **4가지 질문**으로 검토 | 3분 |

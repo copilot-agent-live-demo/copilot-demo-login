@@ -8,7 +8,7 @@
 npm ci            # 의존성 설치
 npm test          # Vitest 단위 테스트 (jsdom)
 npm run typecheck # 타입 검사
-npm run dev       # 로컬 실행: http://localhost:5173
+npm run dev       # 로컬 실행: http://127.0.0.1:5173
 ```
 
 ## 폴더 구조
