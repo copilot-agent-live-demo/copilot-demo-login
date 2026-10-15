@@ -1,0 +1,22 @@
+# 클라우드 에이전트가 작업을 시작하기 전에 개발 환경을 준비하는 워크플로.
+# 의존성을 미리 설치해 두면 에이전트가 바로 테스트를 돌릴 수 있다.
+name: Copilot Setup Steps
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
