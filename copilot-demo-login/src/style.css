@@ -57,3 +57,13 @@ body {
   color: #1a7f37;
   font-weight: 600;
 }
+
+.error {
+  margin: 0;
+  color: #cf222e;
+  font-weight: 600;
+}
+
+.error:empty {
+  display: none;
+}
